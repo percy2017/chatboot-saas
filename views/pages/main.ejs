@@ -1,0 +1,202 @@
+<%- include('header', { title: 'Página Principal' }) %>
+
+<main>
+    <!-- Hero Section -->
+    <section class="hero-section bg-primary text-white py-5">
+        <div class="container py-5">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-3">Potencia tu Negocio con Chatbots Inteligentes</h1>
+                    <p class="lead mb-4">Nuestra plataforma SaaS te permite crear, personalizar y desplegar chatbots de IA avanzados para mejorar la atención al cliente y aumentar las ventas las 24 horas del día, los 7 días de la semana.</p>
+                    <div class="d-flex gap-2">
+                        <a href="/register" class="btn btn-light btn-lg">Comenzar Gratis</a>
+                        <a href="#" class="btn btn-outline-light btn-lg">Ver Demo</a>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-none d-lg-block text-center">
+                    <!-- Placeholder for Hero Image/Illustration -->
+                    <div class="bg-light rounded p-5 d-inline-block" style="width: 100%; height: 300px;">
+                        <p class="text-muted">[Ilustración o Imagen del Chatbot]</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Carousel/Slider Section -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Descubre Nuestras Soluciones</h2>
+            <div id="featuresCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#featuresCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#featuresCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#featuresCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                </div>
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row align-items-center g-4">
+                            <div class="col-md-6">
+                                <h5>Atención al Cliente Automatizada</h5>
+                                <p>Responde preguntas frecuentes, procesa solicitudes y brinda soporte instantáneo sin intervención humana.</p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="bg-light rounded p-4" style="height: 200px;">
+                                    <p class="text-muted text-center">[Imagen: Chatbot respondiendo a un cliente]</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row align-items-center g-4">
+                           <div class="col-md-6">
+                                <h5>Aumenta tus Ventas</h5>
+                                <p>Guía a los clientes a través del proceso de compra, recomienda productos y cierra ventas directamente.</p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="bg-light rounded p-4" style="height: 200px;">
+                                    <p class="text-muted text-center">[Imagen: Gráfico de ventas en aumento]</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row align-items-center g-4">
+                            <div class="col-md-6">
+                                <h5>Fácil de Personalizar</h5>
+                                <p>Adapta el comportamiento, el lenguaje y la apariencia del chatbot a tu marca y necesidades específicas.</p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="bg-light rounded p-4" style="height: 200px;">
+                                    <p class="text-muted text-center">[Imagen: Interfaz de personalización]</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#featuresCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#featuresCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">Características Principales</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <!-- Placeholder Icon -->
+                                    <span class="fs-4">🤖</span>
+                                </div>
+                            </div>
+                            <h5 class="card-title">IA Avanzada</h5>
+                            <p class="card-text">Nuestros chatbots utilizan algoritmos de procesamiento de lenguaje natural de última generación para conversaciones más humanas.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <!-- Placeholder Icon -->
+                                    <span class="fs-4">🔄</span>
+                                </div>
+                            </div>
+                            <h5 class="card-title">Integraciones</h5>
+                            <p class="card-text">Conecta fácilmente tu chatbot con tus CRM, sistemas de pago y otras herramientas que ya usas.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <!-- Placeholder Icon -->
+                                    <span class="fs-4">📊</span>
+                                </div>
+                            </div>
+                            <h5 class="card-title">Analíticas</h5>
+                            <p class="card-text">Obtén insights valiosos sobre las interacciones de los clientes y el rendimiento de tu chatbot.</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <!-- Placeholder Icon -->
+                                    <span class="fs-4">🛡️</span>
+                                </div>
+                            </div>
+                            <h5 class="card-title">Seguridad</h5>
+                            <p class="card-text">Tus datos y los de tus clientes están protegidos con los más altos estándares de seguridad y privacidad.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <div class="bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <!-- Placeholder Icon -->
+                                    <span class="fs-4">📱</span>
+                                </div>
+                            </div>
+                            <h5 class="card-title">Multiplataforma</h5>
+                            <p class="card-text">Despliega tu chatbot en tu sitio web, WhatsApp, Facebook Messenger, Telegram y más.</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <div class="bg-secondary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <!-- Placeholder Icon -->
+                                    <span class="fs-4">⚙️</span>
+                                </div>
+                            </div>
+                            <h5 class="card-title">Fácil de Usar</h5>
+                            <p class="card-text">Interfaz intuitiva que permite crear y gestionar chatbots sin necesidad de conocimientos técnicos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+     <section class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="display-6 mb-3">¿Listo para Transformar tu Negocio?</h2>
+                    <p class="lead mb-4">Únete a miles de empresas que ya están mejorando su servicio al cliente y aumentando sus ventas con nuestra plataforma.</p>
+                    <a href="/register" class="btn btn-primary btn-lg px-4">Comienza tu Prueba Gratis</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    function showSupportInfo() {
+        alert("Para soporte técnico, por favor envía un correo a support@chatbotsaas.com");
+    }
+</script>
+
+<%- include('footer') %>

@@ -1,0 +1,40 @@
+/* Admin Panel Specific Styles */
+
+/* Sidebar */
+#sidebar {
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+}
+
+/* Main content area */
+main {
+    background-color: #f8f9fa;
+}
+
+/* Dark mode styles for admin */
+[data-bs-theme="dark"] #sidebar {
+    background-color: #1e1e1e !important;
+    border-right: 1px solid #333;
+}
+
+[data-bs-theme="dark"] main {
+    background-color: #121212;
+}
+
+[data-bs-theme="dark"] .nav-link {
+    color: #e0e0e0;
+}
+
+[data-bs-theme="dark"] .nav-link:hover,
+[data-bs-theme="dark"] .nav-link.active {
+    color: #fff;
+    background-color: #2e2e2e;
+}
+
+[data-bs-theme="dark"] .border-bottom {
+    border-bottom: 1px solid #333 !important;
+}
+
+[data-bs-theme="dark"] .bg-light {
+    background-color: #2e2e2e !important;
+}
