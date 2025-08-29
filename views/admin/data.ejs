@@ -5,6 +5,12 @@
             <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshData()">
                 <i class="bi bi-arrow-clockwise"></i> Actualizar
             </button>
+            <button type="button" class="btn btn-sm btn-outline-info" onclick="debugInstances()" title="Debug Instancias">
+                <i class="bi bi-bug"></i> Debug
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-success" onclick="testSocket()" title="Test Socket.IO">
+                <i class="bi bi-broadcast"></i> Test Socket
+            </button>
         </div>
     </div>
 </div>
@@ -488,6 +494,74 @@
             socket.disconnect();
         }
     });
+
+    // Función de debugging para instancias
+    async function debugInstances() {
+        try {
+            const response = await fetch('/api/debug/instances');
+            const data = await response.json();
+            
+            console.log('🔍 DEBUG INSTANCIAS:', data);
+            
+            const debugInfo = `
+                <h6>Debug de Instancias</h6>
+                <p><strong>Total Instancias:</strong> ${data.total_instances}</p>
+                <p><strong>Total Usuarios:</strong> ${data.total_users}</p>
+                <hr>
+                <h6>Instancias:</h6>
+                <ul>
+                    ${data.instances.map(inst => `
+                        <li><strong>${inst.name}</strong> 
+                            <br>- ID: ${inst.id}
+                            <br>- Usuario: ${inst.owner_name} (ID: ${inst.user_id})
+                            <br>- Mensajes: ${inst.message_count}
+                            <br>- Contactos: ${inst.contact_count}
+                            <br>- Chats: ${inst.chat_count}
+                        </li>
+                    `).join('')}
+                </ul>
+                <hr>
+                <h6>Usuarios:</h6>
+                <ul>
+                    ${data.users.map(user => `
+                        <li><strong>${user.name}</strong> (${user.email}) - Role: ${user.role}</li>
+                    `).join('')}
+                </ul>
+            `;
+            
+            showDebugModal('Debug Instancias', debugInfo);
+        } catch (error) {
+            console.error('Error al obtener debug:', error);
+            showToast('Error al obtener información de debug');
+        }
+    }
+
+    // Función para probar Socket.IO
+    function testSocket() {
+        if (socket && socket.connected) {
+            showToast('✅ Socket.IO está conectado');
+            console.log('🔌 Socket ID:', socket.id);
+            
+            // Emitir evento de test
+            socket.emit('test_admin', { message: 'Test desde admin panel', timestamp: Date.now() });
+        } else {
+            showToast('❌ Socket.IO no está conectado');
+            console.error('🔌 Socket no conectado');
+        }
+    }
+
+    // Modal para mostrar información de debug
+    function showDebugModal(title, content) {
+        const modal = document.getElementById('detailModal');
+        const modalTitle = document.getElementById('detailModalLabel');
+        const modalContent = document.getElementById('detailContent');
+        
+        modalTitle.textContent = title;
+        modalContent.innerHTML = content;
+        
+        const bsModal = new bootstrap.Modal(modal);
+        bsModal.show();
+    }
 </script>
 
 <style>

@@ -59,6 +59,12 @@ router.get('/admin/data', requiresAuth, async (req, res) => {
     const { type = 'messages', instance } = req.query;
     const instances = await getAllInstancesWithStats();
     
+    // Debug: Log de instancias para diagnosticar
+    console.log('📊 Instancias cargadas para vista de datos:', instances.length);
+    instances.forEach(inst => {
+      console.log(`- ${inst.name} (owner: ${inst.owner_name || 'Sin usuario'}, id: ${inst.id})`);
+    });
+    
     res.render('admin/data', { 
       activeTab: 'data',
       instances,
@@ -124,6 +130,47 @@ router.get('/api/data/:type', requiresAuth, async (req, res) => {
   } catch (error) {
     console.error('Error en API de datos:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// API endpoint para depurar instancias
+router.get('/api/debug/instances', requiresAuth, async (req, res) => {
+  try {
+    const db = getDatabase();
+    
+    // Obtener todas las instancias directamente de la BD
+    const allInstances = await db.all('SELECT * FROM instances ORDER BY created_at DESC');
+    
+    // Obtener usuarios
+    const allUsers = await db.all('SELECT * FROM users');
+    
+    // Obtener estadísticas de cada instancia
+    const instanceStats = [];
+    for (const instance of allInstances) {
+      const messageCount = await db.get('SELECT COUNT(*) as count FROM messages WHERE owner = ?', [instance.name]);
+      const contactCount = await db.get('SELECT COUNT(*) as count FROM contacts WHERE owner = ?', [instance.name]);
+      const chatCount = await db.get('SELECT COUNT(*) as count FROM chats WHERE owner = ?', [instance.name]);
+      
+      const user = allUsers.find(u => u.id === instance.user_id);
+      
+      instanceStats.push({
+        ...instance,
+        owner_name: user ? user.name : 'Sin usuario asignado',
+        message_count: messageCount.count,
+        contact_count: contactCount.count,
+        chat_count: chatCount.count
+      });
+    }
+    
+    res.json({
+      total_instances: allInstances.length,
+      total_users: allUsers.length,
+      instances: instanceStats,
+      users: allUsers
+    });
+  } catch (error) {
+    console.error('Error en debug de instancias:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 

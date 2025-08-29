@@ -62,29 +62,50 @@ function generateFileName(messageId, messageType, originalName = null) {
  */
 async function downloadMediaFile(serverUrl, apiKey, messageId, messageType) {
   try {
-    const downloadUrl = `${serverUrl}/chat/getBase64FromMediaMessage/${messageId}`;
+    // Diferentes endpoints posibles para Evolution API
+    const possibleUrls = [
+      `${serverUrl}/chat/getBase64FromMediaMessage/${messageId}`,
+      `${serverUrl}/message/getBase64FromMediaMessage/${messageId}`, 
+      `${serverUrl}/chat/getBase64/${messageId}`,
+      `${serverUrl}/message/getMedia/${messageId}`,
+      `${serverUrl}/chat/getMedia/${messageId}`
+    ];
     
-    console.log(`Descargando multimedia: ${downloadUrl}`);
+    let lastError = null;
     
-    const response = await axios.get(downloadUrl, {
-      headers: {
-        'apikey': apiKey
-      },
-      timeout: 30000
-    });
+    // Intentar con diferentes URLs hasta encontrar la correcta
+    for (const downloadUrl of possibleUrls) {
+      try {
+        console.log(`📥 Intentando descargar multimedia: ${downloadUrl}`);
+        
+        const response = await axios.get(downloadUrl, {
+          headers: {
+            'apikey': apiKey
+          },
+          timeout: 15000
+        });
 
-    if (response.data && response.data.base64) {
-      return {
-        success: true,
-        base64: response.data.base64,
-        mimeType: response.data.mimetype || 'application/octet-stream',
-        fileName: response.data.fileName || null
-      };
-    } else {
-      throw new Error('No se recibió contenido base64');
+        if (response.data && response.data.base64) {
+          console.log(`✅ Descarga exitosa con URL: ${downloadUrl}`);
+          return {
+            success: true,
+            base64: response.data.base64,
+            mimeType: response.data.mimetype || 'application/octet-stream',
+            fileName: response.data.fileName || null
+          };
+        }
+      } catch (error) {
+        console.log(`❌ Falló URL ${downloadUrl}: ${error.message}`);
+        lastError = error;
+        continue; // Intentar siguiente URL
+      }
     }
+    
+    // Si llegamos aquí, ninguna URL funcionó
+    throw new Error(`No se pudo descargar multimedia desde ningún endpoint. Último error: ${lastError?.message}`);
+    
   } catch (error) {
-    console.error(`Error al descargar multimedia ${messageId}:`, error.message);
+    console.error(`❌ Error al descargar multimedia ${messageId}:`, error.message);
     return {
       success: false,
       error: error.message

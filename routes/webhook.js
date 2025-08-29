@@ -167,12 +167,15 @@ async function storeMessage(db, message, owner, jsonData, serverUrl, apiKey, io)
     // Procesar multimedia si aplica
     if (isMultimedia && serverUrl && apiKey) {
       try {
+        console.log(`🎬 Procesando multimedia ${messageType} para mensaje ${id}`);
         mediaInfo = await processMessageMedia(message, serverUrl, apiKey);
         if (mediaInfo) {
-          console.log(`Multimedia procesado para mensaje ${id}: ${mediaInfo.fileName}`);
+          console.log(`✅ Multimedia procesado exitosamente: ${mediaInfo.fileName}`);
+        } else {
+          console.log(`⚠️ No se pudo procesar multimedia para mensaje ${id}`);
         }
       } catch (mediaError) {
-        console.error(`Error procesando multimedia para mensaje ${id}:`, mediaError.message);
+        console.error(`❌ Error procesando multimedia para mensaje ${id}:`, mediaError.message);
       }
     }
 
