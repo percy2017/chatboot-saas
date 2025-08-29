@@ -189,10 +189,42 @@ async function deleteMessage(id) {
   }
 }
 
+/**
+ * Obtiene mensajes filtrados por instancia.
+ * @param {string} instanceName - Nombre de la instancia (opcional).
+ * @returns {Promise<Array>} Una promesa que resuelve a un array de mensajes.
+ */
+async function getMessagesByInstance(instanceName = null) {
+  const db = getDatabase();
+  if (!db) {
+    throw new Error('La base de datos no ha sido inicializada.');
+  }
+  
+  try {
+    let query = `
+      SELECT m.*, 
+             datetime(m.messageTimestamp, 'unixepoch') as formatted_date,
+             i.name as instance_name
+      FROM messages m 
+      LEFT JOIN instances i ON m.owner = i.name
+      ${instanceName ? 'WHERE m.owner = ?' : ''}
+      ORDER BY m.messageTimestamp DESC
+    `;
+    
+    const params = instanceName ? [instanceName] : [];
+    const messages = await db.all(query, params);
+    return messages;
+  } catch (err) {
+    console.error('Error al obtener mensajes por instancia:', err);
+    throw err;
+  }
+}
+
 export { 
   getAllMessages, 
   getMessageById, 
   createMessage, 
   updateMessage, 
-  deleteMessage 
+  deleteMessage,
+  getMessagesByInstance
 };

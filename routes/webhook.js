@@ -35,10 +35,14 @@ router.post('/webhook', async (req, res) => {
     const owner = instanceName;
     const jsonData = JSON.stringify(payload);
     
-    // Crear o actualizar la instancia
-    const instanceResult = await createInstance({ name: instanceName });
-    if (instanceResult) {
-      console.log(`Instancia '${instanceName}' creada/actualizada automáticamente.`);
+    // Verificar si la instancia existe, si no existe la creamos
+    let instanceResult = await getInstanceByName(instanceName);
+    if (!instanceResult) {
+      // La instancia no existe, la creamos con user_id = 1 (admin por defecto)
+      instanceResult = await createInstance({ name: instanceName, user_id: 1 });
+      console.log(`Instancia '${instanceName}' creada automáticamente.`);
+    } else {
+      console.log(`Instancia '${instanceName}' ya existe.`);
     }
 
     // Procesar diferentes tipos de eventos

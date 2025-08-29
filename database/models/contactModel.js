@@ -152,10 +152,41 @@ async function deleteContact(id) {
   }
 }
 
+/**
+ * Obtiene contactos filtrados por instancia.
+ * @param {string} instanceName - Nombre de la instancia (opcional).
+ * @returns {Promise<Array>} Una promesa que resuelve a un array de contactos.
+ */
+async function getContactsByInstance(instanceName = null) {
+  const db = getDatabase();
+  if (!db) {
+    throw new Error('La base de datos no ha sido inicializada.');
+  }
+  
+  try {
+    let query = `
+      SELECT c.*, 
+             i.name as instance_name
+      FROM contacts c 
+      LEFT JOIN instances i ON c.owner = i.name
+      ${instanceName ? 'WHERE c.owner = ?' : ''}
+      ORDER BY c.pushName, c.id
+    `;
+    
+    const params = instanceName ? [instanceName] : [];
+    const contacts = await db.all(query, params);
+    return contacts;
+  } catch (err) {
+    console.error('Error al obtener contactos por instancia:', err);
+    throw err;
+  }
+}
+
 export { 
   getAllContacts, 
   getContactById, 
   createContact, 
   updateContact, 
-  deleteContact 
+  deleteContact,
+  getContactsByInstance
 };

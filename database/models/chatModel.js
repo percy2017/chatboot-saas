@@ -138,10 +138,41 @@ async function deleteChat(id) {
   }
 }
 
+/**
+ * Obtiene chats filtrados por instancia.
+ * @param {string} instanceName - Nombre de la instancia (opcional).
+ * @returns {Promise<Array>} Una promesa que resuelve a un array de chats.
+ */
+async function getChatsByInstance(instanceName = null) {
+  const db = getDatabase();
+  if (!db) {
+    throw new Error('La base de datos no ha sido inicializada.');
+  }
+  
+  try {
+    let query = `
+      SELECT c.*, 
+             i.name as instance_name
+      FROM chats c 
+      LEFT JOIN instances i ON c.owner = i.name
+      ${instanceName ? 'WHERE c.owner = ?' : ''}
+      ORDER BY c.id
+    `;
+    
+    const params = instanceName ? [instanceName] : [];
+    const chats = await db.all(query, params);
+    return chats;
+  } catch (err) {
+    console.error('Error al obtener chats por instancia:', err);
+    throw err;
+  }
+}
+
 export { 
   getAllChats, 
   getChatById, 
   createChat, 
   updateChat, 
-  deleteChat 
+  deleteChat,
+  getChatsByInstance
 };

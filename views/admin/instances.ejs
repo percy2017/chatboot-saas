@@ -81,10 +81,10 @@
                         <button class="btn btn-outline-secondary btn-sm" onclick="getInstanceQRCode('<%= instance.instanceName %>')">
                             <i class="bi bi-qr-code"></i> QR
                         </button>
-                        <!-- Botón Ver deshabilitado por ahora -->
-                        <button class="btn btn-outline-primary btn-sm" disabled>
+                        <!-- Botón Ver - Redirige a vista de datos -->
+                        <a href="/admin/data?instance=<%= instance.instanceName %>&type=messages" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-eye"></i> Ver
-                        </button>
+                        </a>
                         <button class="btn btn-outline-danger btn-sm" onclick="deleteInstance('<%= instance.instanceName %>')">
                             <i class="bi bi-trash"></i> Eliminar
                         </button>

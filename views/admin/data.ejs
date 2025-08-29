@@ -1,0 +1,375 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Datos de WhatsApp</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshData()">
+                <i class="bi bi-arrow-clockwise"></i> Actualizar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Controles de filtro -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <label for="instanceSelect" class="form-label">Filtrar por Instancia</label>
+        <select id="instanceSelect" class="form-select">
+            <option value="">Todas las instancias</option>
+            <% if (typeof instances !== 'undefined' && instances.length > 0) { %>
+                <% instances.forEach(instance => { %>
+                    <option value="<%= instance.name %>" <%= selectedInstance === instance.name ? 'selected' : '' %>>
+                        <%= instance.name %> (<%= instance.owner_name || 'Sin propietario' %>)
+                    </option>
+                <% }); %>
+            <% } %>
+        </select>
+    </div>
+    <div class="col-md-6">
+        <label for="typeSelect" class="form-label">Tipo de Datos</label>
+        <select id="typeSelect" class="form-select">
+            <option value="messages" <%= selectedType === 'messages' ? 'selected' : '' %>>Mensajes</option>
+            <option value="contacts" <%= selectedType === 'contacts' ? 'selected' : '' %>>Contactos</option>
+            <option value="chats" <%= selectedType === 'chats' ? 'selected' : '' %>>Chats</option>
+        </select>
+    </div>
+</div>
+
+<!-- Pestañas de contenido -->
+<ul class="nav nav-tabs" id="dataTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link <%= selectedType === 'messages' ? 'active' : '' %>" id="messages-tab" data-bs-toggle="tab" data-bs-target="#messages" type="button" role="tab">
+            <i class="bi bi-chat-dots"></i> Mensajes
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link <%= selectedType === 'contacts' ? 'active' : '' %>" id="contacts-tab" data-bs-toggle="tab" data-bs-target="#contacts" type="button" role="tab">
+            <i class="bi bi-people"></i> Contactos
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link <%= selectedType === 'chats' ? 'active' : '' %>" id="chats-tab" data-bs-toggle="tab" data-bs-target="#chats" type="button" role="tab">
+            <i class="bi bi-chat-square-dots"></i> Chats
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content mt-3" id="dataTabsContent">
+    <!-- Pestaña de Mensajes -->
+    <div class="tab-pane fade <%= selectedType === 'messages' ? 'show active' : '' %>" id="messages" role="tabpanel">
+        <div class="table-responsive">
+            <table id="messagesTable" class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Instancia</th>
+                        <th>De</th>
+                        <th>Chat</th>
+                        <th>Tipo</th>
+                        <th>Contenido</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- DataTables cargará el contenido aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pestaña de Contactos -->
+    <div class="tab-pane fade <%= selectedType === 'contacts' ? 'show active' : '' %>" id="contacts" role="tabpanel">
+        <div class="table-responsive">
+            <table id="contactsTable" class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Instancia</th>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Foto de Perfil</th>
+                        <th>Fecha Creación</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- DataTables cargará el contenido aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pestaña de Chats -->
+    <div class="tab-pane fade <%= selectedType === 'chats' ? 'show active' : '' %>" id="chats" role="tabpanel">
+        <div class="table-responsive">
+            <table id="chatsTable" class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Instancia</th>
+                        <th>ID del Chat</th>
+                        <th>Fecha Creación</th>
+                        <th>Última Actualización</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- DataTables cargará el contenido aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver detalles -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailModalLabel">Detalles del Elemento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="detailContent">
+                    <!-- El contenido se cargará aquí -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentDataTable = null;
+    let currentType = '<%= selectedType %>';
+    let currentInstance = '<%= selectedInstance || "" %>';
+
+    // Inicializar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeDataTable();
+        
+        // Event listeners para cambios de filtros
+        document.getElementById('typeSelect').addEventListener('change', function() {
+            currentType = this.value;
+            updateActiveTab();
+            initializeDataTable();
+        });
+
+        document.getElementById('instanceSelect').addEventListener('change', function() {
+            currentInstance = this.value;
+            initializeDataTable();
+        });
+
+        // Event listeners para pestañas
+        document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function(e) {
+                const tabType = e.target.id.replace('-tab', '');
+                if (tabType !== currentType) {
+                    currentType = tabType;
+                    document.getElementById('typeSelect').value = tabType;
+                    initializeDataTable();
+                }
+            });
+        });
+    });
+
+    function updateActiveTab() {
+        // Activar la pestaña correspondiente
+        const tabElement = document.getElementById(`${currentType}-tab`);
+        if (tabElement) {
+            const tab = new bootstrap.Tab(tabElement);
+            tab.show();
+        }
+    }
+
+    function initializeDataTable() {
+        // Destruir DataTable existente si existe
+        if (currentDataTable) {
+            currentDataTable.destroy();
+            currentDataTable = null;
+        }
+
+        const tableId = `${currentType}Table`;
+        const table = document.getElementById(tableId);
+        
+        if (!table) return;
+
+        // Configuración común para todas las tablas
+        const commonConfig = {
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: `/api/data/${currentType}`,
+                data: function(d) {
+                    if (currentInstance) {
+                        d.instance = currentInstance;
+                    }
+                }
+            },
+            pageLength: 25,
+            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+            },
+            responsive: true
+        };
+
+        // Configuraciones específicas por tipo
+        if (currentType === 'messages') {
+            currentDataTable = new DataTable(table, {
+                ...commonConfig,
+                columns: [
+                    { 
+                        data: 'formatted_date',
+                        render: function(data, type, row) {
+                            if (data) return data;
+                            if (row.messageTimestamp) {
+                                return new Date(row.messageTimestamp * 1000).toLocaleString('es-ES');
+                            }
+                            return 'N/A';
+                        }
+                    },
+                    { data: 'instance_name', defaultContent: row => row.owner || 'N/A' },
+                    { data: 'pushName', defaultContent: 'N/A' },
+                    { 
+                        data: 'remoteJid',
+                        render: function(data) {
+                            if (!data) return 'N/A';
+                            return data.includes('@g.us') ? 'Grupo' : 'Individual';
+                        }
+                    },
+                    { data: 'messageType', defaultContent: 'N/A' },
+                    { 
+                        data: 'content',
+                        render: function(data) {
+                            if (!data) return 'N/A';
+                            return data.length > 50 ? data.substring(0, 50) + '...' : data;
+                        }
+                    },
+                    {
+                        data: null,
+                        render: function(data, type, row) {
+                            return `
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDetails('${row.id}', 'message')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            `;
+                        }
+                    }
+                ]
+            });
+        } else if (currentType === 'contacts') {
+            currentDataTable = new DataTable(table, {
+                ...commonConfig,
+                columns: [
+                    { data: 'instance_name', defaultContent: row => row.owner || 'N/A' },
+                    { data: 'id' },
+                    { data: 'pushName', defaultContent: 'N/A' },
+                    {
+                        data: 'profilePictureUrl',
+                        render: function(data) {
+                            if (data) {
+                                return `<img src="${data}" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">`;
+                            }
+                            return '<span class="text-muted">Sin foto</span>';
+                        }
+                    },
+                    { 
+                        data: 'created_at',
+                        render: function(data) {
+                            return data ? new Date(data).toLocaleString('es-ES') : 'N/A';
+                        }
+                    },
+                    {
+                        data: null,
+                        render: function(data, type, row) {
+                            return `
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDetails('${row.id}', 'contact')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            `;
+                        }
+                    }
+                ]
+            });
+        } else if (currentType === 'chats') {
+            currentDataTable = new DataTable(table, {
+                ...commonConfig,
+                columns: [
+                    { data: 'instance_name', defaultContent: row => row.owner || 'N/A' },
+                    { data: 'id' },
+                    { 
+                        data: 'created_at',
+                        render: function(data) {
+                            return data ? new Date(data).toLocaleString('es-ES') : 'N/A';
+                        }
+                    },
+                    { 
+                        data: 'updated_at',
+                        render: function(data) {
+                            return data ? new Date(data).toLocaleString('es-ES') : 'N/A';
+                        }
+                    },
+                    {
+                        data: null,
+                        render: function(data, type, row) {
+                            return `
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDetails('${row.id}', 'chat')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            `;
+                        }
+                    }
+                ]
+            });
+        }
+    }
+
+    function refreshData() {
+        if (currentDataTable) {
+            currentDataTable.ajax.reload();
+        }
+    }
+
+    function showDetails(id, type) {
+        // Esta función mostrará los detalles del elemento seleccionado
+        const modal = new bootstrap.Modal(document.getElementById('detailModal'));
+        const content = document.getElementById('detailContent');
+        
+        content.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
+        modal.show();
+
+        // Aquí podrías hacer una llamada AJAX para obtener más detalles
+        // Por ahora, mostraremos un mensaje básico
+        setTimeout(() => {
+            content.innerHTML = `
+                <div class="alert alert-info">
+                    <h6>Detalles del ${type}</h6>
+                    <p><strong>ID:</strong> ${id}</p>
+                    <p><strong>Tipo:</strong> ${type}</p>
+                    <p><em>Aquí se mostrarían los detalles completos del elemento.</em></p>
+                </div>
+            `;
+        }, 500);
+    }
+</script>
+
+<style>
+    .table th {
+        white-space: nowrap;
+    }
+    
+    .table td {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .nav-tabs .nav-link {
+        color: #6c757d;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #0d6efd;
+    }
+</style>
