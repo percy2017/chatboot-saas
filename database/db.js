@@ -40,6 +40,14 @@ async function initializeDatabase() {
     // Crear el usuario administrador por defecto
     await createDefaultAdmin();
 
+    // Ejecutar migración de multimedia
+    try {
+      const { addMultimediaFields } = await import('./migrate-multimedia.js');
+      await addMultimediaFields();
+    } catch (error) {
+      console.error('Error en migración de multimedia:', error);
+    }
+
   } catch (err) {
     console.error('Error al inicializar la base de datos:', err);
     throw err;

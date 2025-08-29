@@ -60,15 +60,20 @@ async function createMessage(messageData) {
     throw new Error('La base de datos no ha sido inicializada.');
   }
   
-  const { id, remoteJid, participant, pushName, messageType, messageTimestamp, owner, source, content, raw_data_json } = messageData;
+  const { 
+    id, remoteJid, participant, pushName, messageType, messageTimestamp, owner, source, content, raw_data_json,
+    media_type, media_filename, media_path, media_size, media_mimetype, media_caption, media_downloaded 
+  } = messageData;
   
   try {
     // Insertar el nuevo mensaje
     const result = await db.run(
       `INSERT OR REPLACE INTO messages 
-      (id, remoteJid, participant, pushName, messageType, messageTimestamp, owner, source, content, raw_data_json) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [id, remoteJid, participant, pushName, messageType, messageTimestamp, owner, source, content, raw_data_json]
+      (id, remoteJid, participant, pushName, messageType, messageTimestamp, owner, source, content, raw_data_json,
+       media_type, media_filename, media_path, media_size, media_mimetype, media_caption, media_downloaded) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, remoteJid, participant, pushName, messageType, messageTimestamp, owner, source, content, raw_data_json,
+       media_type, media_filename, media_path, media_size, media_mimetype, media_caption, media_downloaded]
     );
     
     // Obtener el mensaje recién creado

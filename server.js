@@ -100,9 +100,27 @@ const io = new Server(httpServer, {
   },
 });
 
+// Hacer io disponible globalmente
+app.set('io', io);
+
 io.on("connection", (socket) => {
   const clientId = socket.id;
   console.log("Un cliente se ha conectado:", clientId);
+  
+  // Manejar eventos del cliente
+  socket.on('join_admin', () => {
+    socket.join('admin');
+    console.log(`Cliente ${clientId} se unió a la sala admin`);
+  });
+
+  socket.on('leave_admin', () => {
+    socket.leave('admin');
+    console.log(`Cliente ${clientId} salió de la sala admin`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log("Cliente desconectado:", clientId);
+  });
 });
 
 // Usar las rutas
