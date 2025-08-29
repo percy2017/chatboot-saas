@@ -1,24 +1,128 @@
 /* Admin Panel Specific Styles */
 
-/* Sidebar */
-#sidebar {
-    background-color: #f8f9fa;
-    border-right: 1px solid #dee2e6;
+/* Instance Cards Styling */
+.instances-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.instance-card {
+    max-width: 350px;
+    margin: 0 auto;
+    transition: transform 0.2s ease-in-out;
+}
+
+.instance-card:hover {
+    transform: translateY(-2px);
+}
+
+.instance-card .card-body {
+    padding: 1rem;
+}
+
+.instance-card .card-text {
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.instance-card .card-footer {
+    padding: 0.75rem 1rem;
+}
+
+.instance-card .btn-sm {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Ensure full height for sticky footer */
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main content area needs to grow and be a flex container */
+.container-fluid.flex-grow-1 {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.container-fluid.flex-grow-1 > .row {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: row;
 }
 
 /* Main content area */
 main {
-    background-color: #f8f9fa;
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Dark mode styles for admin */
+main > .row {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: row;
+}
+
+main > .row > .col-lg-12 {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Sidebar */
+#sidebar {
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    flex: 0 0 auto; /* Don't grow, but allow to shrink if needed */
+}
+
+/* Theme toggle button */
+#admin-theme-toggle {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+#admin-theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* Footer */
+footer {
+    flex-shrink: 0;
+    margin-top: auto; /* This pushes the footer to the bottom */
+}
+
+
+/* --- Dark mode styles for admin --- */
+[data-bs-theme="dark"] {
+    /* General dark background and text */
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+[data-bs-theme="dark"] body {
+    background-color: #121212;
+}
+
+[data-bs-theme="dark"] .navbar {
+    background-color: #1e1e1e !important;
+}
+
 [data-bs-theme="dark"] #sidebar {
     background-color: #1e1e1e !important;
     border-right: 1px solid #333;
-}
-
-[data-bs-theme="dark"] main {
-    background-color: #121212;
 }
 
 [data-bs-theme="dark"] .nav-link {
@@ -37,4 +141,34 @@ main {
 
 [data-bs-theme="dark"] .bg-light {
     background-color: #2e2e2e !important;
+}
+
+[data-bs-theme="dark"] .card {
+    background-color: #1e1e1e;
+    border-color: #333;
+}
+
+[data-bs-theme="dark"] .form-control {
+    background-color: #2e2e2e;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+[data-bs-theme="dark"] .form-control:focus {
+    background-color: #2e2e2e;
+    border-color: #666;
+    color: #e0e0e0;
+    box-shadow: 0 0 0 0.2rem rgba(100, 100, 100, 0.25);
+}
+
+[data-bs-theme="dark"] footer {
+    background-color: #1e1e1e !important;
+    color: #e0e0e0;
+}
+
+/* Specific dark mode styles for the theme toggle button */
+[data-bs-theme="dark"] #admin-theme-toggle {
+    background-color: #2e2e2e;
+    border-color: #444;
+    color: #e0e0e0;
 }

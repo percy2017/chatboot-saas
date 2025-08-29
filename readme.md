@@ -1,20 +1,21 @@
-# Titulo: ChatBot Saas v1.0
-Proyecto web para crear un saas, de chatbot con IA
+# ChatBot SaaS v1.0
 
-# Stack
-- expressjs & ejs
-- bootstrap 5, datatables y swalert2
-- evolution api 1.8.2
-- sqlite
-- socketIO
+Proyecto web para crear un SaaS de chatbot con IA.
 
-# Caracteristicas
-- multiusuario (admin | client)
-- full responsive
+## Stack
 
-# Paginas
-1. Frontend (main | login | register) 1ra fase
-2. Dashboard (main | intances | users ) 2da fase
+- **Backend**: Node.js, Express.js v5.1.0
+- **Frontend**: EJS, Bootstrap 5, Vanilla JavaScript
+- **Base de datos**: SQLite
+- **Tiempo real**: Socket.IO v4.8.1
+- **Autenticación**: bcrypt, express-session
+- **API externa**: Evolution API v1.8.2
 
-# nodemon dev
-el servidor siempre esta corriendo
+## Características
+
+- Multiusuario (admin | client)
+- Full responsive
+- Sistema de autenticación (login/logout)
+- Panel de administración
+- Recepción y almacenamiento de datos de Evolution API
+- Modo claro/oscuro

@@ -29,6 +29,34 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // ----------------- Logout desde el área pública --------------
+  const publicLogoutButton = document.getElementById("publicLogoutButton");
+  if (publicLogoutButton) {
+    publicLogoutButton.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      fetch('/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message === "Sesión cerrada correctamente.") {
+            // Recargar la página para reflejar el cambio de estado
+            window.location.reload();
+          } else {
+            alert(data.message || "Error al cerrar sesión.");
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert("Error de conexión con el servidor.");
+        });
+    });
+  }
+
   // ----------------- main --------------
   console.log("Public page loaded");
 
@@ -48,15 +76,28 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      // In a real application, you would send this data to your server
-      // For now, we simulate a successful login and redirect to /admin
-      console.log("Login attempt with:", { email, password, remember });
-      
-      // Simulate login process and redirect to admin
-      // window.location.href = '/admin'; // Uncomment when backend is ready
-      // For now, simulate and redirect
-      alert("Inicio de sesión exitoso. Redirigiendo al panel de administración...");
-      window.location.href = '/admin'; // Redirect to admin
+      // Enviar datos al servidor
+      fetch('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message === "Inicio de sesión exitoso.") {
+            // Recargar la página para reflejar el cambio de estado o redirigir
+            window.location.reload(); // O window.location.href = '/'; 
+          } else {
+            // Mostrar mensaje de error
+            alert(data.message || "Error desconocido en el inicio de sesión.");
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert("Error de conexión con el servidor.");
+        });
     });
   }
 
@@ -96,11 +137,6 @@ document.addEventListener("DOMContentLoaded", function () {
         password,
         terms,
       });
-
-      // Simulate registration process and redirect to admin
-      // window.location.href = '/admin'; // Uncomment when backend is ready
-      // For now, simulate and redirect
-      alert("Registro exitoso. Redirigiendo al panel de administración...");
       window.location.href = '/admin'; // Redirect to admin
     });
   }

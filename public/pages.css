@@ -1,7 +1,13 @@
 /* ----------- main --------------- */
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
 }
 
 .navbar-brand {
@@ -15,6 +21,10 @@ body {
 
 .btn {
     border-radius: 20px;
+}
+
+main {
+    flex-shrink: 0;
 }
 
 footer {

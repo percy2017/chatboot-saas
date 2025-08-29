@@ -1,0 +1,310 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Instancias</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createInstanceModal">
+                Nueva Instancia
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Mensaje de error de API si existe -->
+<% if (typeof evolutionApiError !== 'undefined' && evolutionApiError) { %>
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-danger text-center" role="alert">
+            <%= evolutionApiError %>
+        </div>
+    </div>
+</div>
+<% } %>
+
+<!-- Mensaje si no hay instancias -->
+<% if (typeof instances !== 'undefined' && instances.length === 0 && (!evolutionApiError || !evolutionApiError)) { %>
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-info text-center" role="alert">
+            No se encontraron instancias en Evolution API. Crea una nueva para comenzar.
+        </div>
+    </div>
+</div>
+<% } %>
+
+<!-- Grid de tarjetas de instancias -->
+<div class="instances-grid">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+        <% if (typeof instances !== 'undefined' && instances.length > 0) { %>
+            <% instances.forEach(instance => { %>
+                <div class="col">
+                    <div class="card h-100 shadow-sm instance-card">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <!-- Avatar/Icono (placeholder o imagen real) -->
+                            <% if (instance.profilePictureUrl) { %>
+                                <img src="<%= instance.profilePictureUrl %>" alt="Profile Picture" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                            <% } else { %>
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                    <span class="text-primary fw-bold"><%= (instance.instanceName || 'N/A').charAt(0).toUpperCase() %></span>
+                                </div>
+                            <% } %>
+                            <!-- Nombre/Título de la instancia -->
+                            <span class="fw-bold"><%= instance.instanceName || 'Sin nombre' %></span>
+                        </div>
+                        <!-- Estado -->
+                        <% 
+                            let statusClass = 'bg-secondary';
+                            let statusText = 'Desconocido';
+                            const status = instance.status || 'unknown';
+                            if (status === 'open') {
+                                statusClass = 'bg-success';
+                                statusText = 'Conectado';
+                            } else if (status === 'connecting' || status === 'created') {
+                                statusClass = 'bg-warning text-dark';
+                                statusText = 'Conectando';
+                            } else if (status === 'close') {
+                                statusClass = 'bg-danger';
+                                statusText = 'Desconectado';
+                            }
+                        %>
+                        <span class="badge <%= statusClass %>"><%= statusText %></span>
+                    </div>
+                    <div class="card-body">
+                        <!-- Información adicional de la instancia -->
+                        <p class="card-text mb-1"><strong>Nombre de perfil:</strong> <%= instance.profileName || 'N/A' %></p>
+                        <p class="card-text mb-1"><strong>Propietario:</strong> <%= instance.owner || 'N/A' %></p>
+                        <p class="card-text mb-1"><strong>URL del servidor:</strong> <%= instance.serverUrl || 'N/A' %></p>
+                        <!-- Puedes añadir más información aquí si es relevante -->
+                    </div>
+                    <div class="card-footer bg-light d-flex justify-content-between">
+                        <!-- Acciones -->
+                        <button class="btn btn-outline-secondary btn-sm" onclick="getInstanceQRCode('<%= instance.instanceName %>')">
+                            <i class="bi bi-qr-code"></i> QR
+                        </button>
+                        <!-- Botón Ver deshabilitado por ahora -->
+                        <button class="btn btn-outline-primary btn-sm" disabled>
+                            <i class="bi bi-eye"></i> Ver
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="deleteInstance('<%= instance.instanceName %>')">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <% }); %>
+        <% } %>
+    </div>
+</div>
+
+<!-- Modal para Crear Instancia -->
+<div class="modal fade" id="createInstanceModal" tabindex="-1" aria-labelledby="createInstanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createInstanceModalLabel">Crear Nueva Instancia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createInstanceForm">
+                    <div class="mb-3">
+                        <label for="createInstanceName" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="createInstanceName" required>
+                        <div class="form-text">El nombre debe ser único en Evolution API.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="createInstance()">Crear Instancia</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Mostrar QR -->
+<div class="modal fade" id="qrCodeModal" tabindex="-1" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="qrCodeModalLabel">Código QR de Instancia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="qrCodeContent">
+                    <!-- El contenido del QR se cargará aquí -->
+                    <p id="qrCodeMessage">Cargando código QR...</p>
+                    <div id="qrCodeImageContainer" style="display:none;">
+                        <!-- La imagen del QR se mostrará aquí -->
+                        <img id="qrCodeImage" src="" alt="Código QR" class="img-fluid">
+                        <p class="mt-2"><strong>Código de emparejamiento:</strong> <span id="pairingCode"></span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Función para crear una nueva instancia
+    async function createInstance() {
+        const name = document.getElementById('createInstanceName').value.trim();
+
+        // Validación básica
+        if (!name) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Por favor, ingrese un nombre para la instancia.'
+            });
+            return;
+        }
+
+        try {
+            const response = await fetch('/admin/instances', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: name })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Cerrar el modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('createInstanceModal'));
+                modal.hide();
+
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: data.message
+                }).then(() => {
+                    // Recargar la página para reflejar los cambios
+                    window.location.reload();
+                });
+            } else {
+                // Mostrar mensaje de error
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'Error desconocido al crear la instancia.'
+                });
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error de conexión con el servidor.'
+            });
+        }
+    }
+
+    // Función para eliminar una instancia
+    function deleteInstance(instanceName) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción no se puede deshacer y eliminará la instancia en Evolution API.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/admin/instances/${encodeURIComponent(instanceName)}/delete`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // Mostrar mensaje de éxito
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: data.message
+                        }).then(() => {
+                            // Recargar la página para reflejar los cambios
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Error al eliminar la instancia.'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error de conexión con el servidor.'
+                    });
+                }
+            }
+        });
+    }
+
+    // Función para obtener y mostrar el código QR
+    async function getInstanceQRCode(instanceName) {
+        const modal = new bootstrap.Modal(document.getElementById('qrCodeModal'));
+        const messageElement = document.getElementById('qrCodeMessage');
+        const imageContainer = document.getElementById('qrCodeImageContainer');
+        const imageElement = document.getElementById('qrCodeImage');
+        const pairingCodeElement = document.getElementById('pairingCode');
+
+        // Limpiar estado previo
+        messageElement.textContent = 'Cargando código QR...';
+        messageElement.className = ''; // Resetear clases de error
+        imageContainer.style.display = 'none';
+        imageElement.src = '';
+        pairingCodeElement.textContent = '';
+        
+        modal.show();
+
+        try {
+            const response = await fetch(`/admin/instances/${encodeURIComponent(instanceName)}/qrcode`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Mostrar el QR
+                if (data.qrData && data.qrData.code) {
+                    imageElement.src = data.qrData.code; // Se espera que 'code' sea una imagen base64
+                    pairingCodeElement.textContent = data.qrData.pairingCode || 'N/A';
+                    messageElement.style.display = 'none';
+                    imageContainer.style.display = 'block';
+                } else {
+                    messageElement.textContent = 'No se pudo obtener la imagen del QR.';
+                    messageElement.className = 'text-danger';
+                }
+            } else {
+                // Mostrar mensaje de error
+                messageElement.textContent = data.message || 'Error al obtener el código QR.';
+                messageElement.className = 'text-danger';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            messageElement.textContent = 'Error de conexión al obtener el código QR.';
+            messageElement.className = 'text-danger';
+        }
+    }
+</script>
