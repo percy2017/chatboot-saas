@@ -1,4 +1,6 @@
 /node_modules
-QWEN.md
 CLAUDE.md
 /database/app.db
+settings.json
+logs.md
+QWEN.md
